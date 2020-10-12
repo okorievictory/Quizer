@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        .holder{
+            background-color: black;
+            color: #fff;
+            margin: 50px;
+            padding: 50px;
+        }
+        h1{
+            font-size: 60px;
+        }
+        p{
+            font-size: 40px;
+            line-height: 55px;
+        }
+        .center{
+            text-align: center;
+        }
+        ul li{
+            list-style-type: none;
+            margin-bottom: 20px;  
+            padding: 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 30px;
+        }
+        ul li:hover{
+            background-color: #fff;
+            color: #000;
+        }
+        .right{
+            float:right;
+        }
+        button{
+            list-style-type: none;
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="holder" id="holder">
+        <h1 class="center">RAD5 Quizzer 1.0 <small class="right">Point : <span id="point">0</span></small></h1>
+        <p class="center" id="question"></p>
+        <div class="center">
+            <ul>
+                <li id="option1" onclick="checkAnswer('option1')"></li>
+                <li id="option2" onclick="checkAnswer('option2')"></li>
+                <li id="option3" onclick="checkAnswer('option3')"></li>
+                <li id="option4" onclick="checkAnswer('option4')"></li>
+            </ul>
+        </div>
+        <div>
+            <button class="right" onclick="newQuestion()">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let counter = 0;
+        let point = 0;
+        let totalQuestions;
+        let correct_answer;
+        let url = 'https://opentdb.com/api.php?amount=5&difficulty=hard&type=multiple'
+        fetch(url)
+        .then(response => {
+            return response.json()
+        })
+        .then(questions => {
+            // console.log(questions.results.length)
+            let totalQuestionsLength = questions.results.length;
+            totalQuestions =questions.results;
+            newQuestion();
+        })
+        function newQuestion(){
+            if(counter < 5){
+                // console.log(totalQuestions[counter])
+                let question = totalQuestions[counter].question
+                correct_answer = totalQuestions[counter].correct_answer
+                let incorrect_answers = totalQuestions[counter].incorrect_answers
+                incorrect_answers.push(correct_answer)
+                let allAnswers = incorrect_answers.sort();
+                // console.log(allAnswers)
+
+                document.getElementById('question').innerHTML = question
+                document.getElementById('option1').innerHTML = allAnswers[0]
+                document.getElementById('option2').innerHTML = allAnswers[1]
+                document.getElementById('option3').innerHTML = allAnswers[2]
+                document.getElementById('option4').innerHTML = allAnswers[3]
+                counter++;
+            }else{
+                document.getElementById('holder').innerHTML = "<h1 class='center'> Thank You for Completing Quizzer 1.0 <br> Your Total Point is : " + point + "</h1>";
+            }
+        }
+
+        function checkAnswer(selectedAnswerIndex){
+            let selectedAnswer = document.getElementById(selectedAnswerIndex).innerHTML
+            if(selectedAnswer == correct_answer){
+                point++;
+                alert("correct, 1 Point Added");
+                document.getElementById('point').innerHTML = point;
+                newQuestion()
+
+            }else{
+                alert("Wrong Answer");
+                newQuestion()
+            }
+            
+        }
+    </script>
+</body>
+</html>
